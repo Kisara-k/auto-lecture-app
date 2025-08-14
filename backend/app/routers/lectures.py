@@ -95,6 +95,33 @@ async def extract_pdf_content(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error extracting content: {str(e)}")
 
+@router.post("/extract-content-from-merged", response_model=ExtractionResponse)
+async def extract_content_from_merged_pdf():
+    """
+    Extract content from the merged PDF file stored in temp directory.
+    """
+    try:
+        # Look for merged PDF in temp directory
+        merged_pdf_path = get_temp_file_path("merged_lectures.pdf")
+        
+        if not merged_pdf_path.exists():
+            raise HTTPException(status_code=404, detail="No merged PDF found. Please merge PDFs first.")
+        
+        # Read the merged PDF
+        with open(merged_pdf_path, 'rb') as f:
+            pdf_content = f.read()
+        
+        lectures = await extract_content_from_pdf(pdf_content)
+        
+        return ExtractionResponse(
+            message="Content extracted successfully from merged PDF",
+            lecture_count=len(lectures),
+            lectures=lectures
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error extracting content from merged PDF: {str(e)}")
+
 @router.post("/process-lectures", response_model=ProcessingResponse)
 async def process_lectures_with_ai(
     lectures_json: str = Form(...),

@@ -256,7 +256,7 @@ async def extract_content_from_pdf(pdf_bytes: bytes) -> List[Dict[str, Any]]:
     try:
         toc_content = extract_all_toc_entries_with_content(pdf_bytes)
         
-        # Remove level, start_page, end_page fields for API response
+        # Remove level, start_page, end_page fields for API response (matches original script)
         result = []
         for entry in toc_content:
             result.append({
@@ -266,6 +266,7 @@ async def extract_content_from_pdf(pdf_bytes: bytes) -> List[Dict[str, Any]]:
             })
         
         # Save extracted content to local temp directory for later use
+        # This matches the original script behavior of saving filtered JSON
         extracted_json_path = save_temp_json(result, "extracted_lectures.json")
         print(f"Extracted content saved to: {extracted_json_path}")
         

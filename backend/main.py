@@ -43,6 +43,7 @@ async def root():
         "endpoints": {
             "merge_pdfs": "/api/v1/merge-pdfs",
             "extract_content": "/api/v1/extract-content", 
+            "extract_content_from_merged": "/api/v1/extract-content-from-merged",
             "process_lectures": "/api/v1/process-lectures",
             "complete_pipeline": "/api/v1/process-complete-pipeline",
             "status": "/api/v1/status",

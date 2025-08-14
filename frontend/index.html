@@ -1030,22 +1030,19 @@
           return;
         }
 
-        addDebugLog("Starting content extraction...", mergedPdfData);
-
-        // For demo purposes, we'll simulate using the first uploaded file
-        // In a real implementation, you'd use the actual merged PDF
-        const formData = new FormData();
-        formData.append("file", uploadedFiles[0]);
+        addDebugLog("Starting content extraction from merged PDF...");
 
         showLoading(true);
         hideStatus();
 
         try {
           addDebugLog("Sending extract content request to API...");
-          const response = await fetch(`${API_BASE}/extract-content`, {
-            method: "POST",
-            body: formData,
-          });
+          const response = await fetch(
+            `${API_BASE}/extract-content-from-merged`,
+            {
+              method: "POST",
+            }
+          );
 
           addDebugLog("Extract content API response received", {
             status: response.status,
@@ -1065,7 +1062,7 @@
 
             showStatus(
               "success",
-              `✅ Content extracted successfully! Found ${result.lecture_count} lectures.`
+              `✅ Content extracted successfully! Found ${result.lecture_count} lectures. JSON saved to temp directory.`
             );
             updateProcessButton();
           } else {
