@@ -8,6 +8,10 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.routers import lectures
+from app.utils.temp_utils import get_temp_dir
+
+# Initialize temp directory on startup
+get_temp_dir()
 
 app = FastAPI(
     title="Auto Lecture App API",
@@ -42,7 +46,10 @@ async def root():
             "process_lectures": "/api/v1/process-lectures",
             "complete_pipeline": "/api/v1/process-complete-pipeline",
             "status": "/api/v1/status",
-            "update_config": "/api/v1/update-config"
+            "update_config": "/api/v1/update-config",
+            "temp_files": "/api/v1/temp-files",
+            "get_temp_file": "/api/v1/temp-files/{filename}",
+            "get_temp_file_content": "/api/v1/temp-files/{filename}/content"
         }
     }
 

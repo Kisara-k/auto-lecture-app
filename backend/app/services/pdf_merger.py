@@ -3,7 +3,7 @@ import os
 import re
 from typing import List, Optional, BinaryIO
 from fastapi import HTTPException
-import tempfile
+from ..utils.temp_utils import create_temp_file, get_temp_dir, save_temp_file
 
 def strip_bookmarks(pdf_path: str) -> Optional[fitz.Document]:
     """Open a PDF, remove bookmarks by creating a new doc with all pages."""
@@ -53,17 +53,17 @@ async def merge_pdfs(pdf_files: List[tuple[str, bytes]]) -> bytes:
     
     try:
         for filename, file_content in pdf_files:
-            # Create temporary file for processing
-            temp_fd, temp_file_path = tempfile.mkstemp(suffix='.pdf')
+            # Create temporary file for processing using local temp directory
+            temp_file_path = create_temp_file(suffix='.pdf', prefix=f"merge_{filename}_")
             temp_files.append(temp_file_path)
             
             try:
                 # Write content to temporary file
-                with os.fdopen(temp_fd, 'wb') as temp_file:
+                with open(temp_file_path, 'wb') as temp_file:
                     temp_file.write(file_content)
                 
                 # Ensure file is fully written and closed before processing
-                cleaned_doc = strip_bookmarks(temp_file_path)
+                cleaned_doc = strip_bookmarks(str(temp_file_path))
                 
                 if cleaned_doc is None or cleaned_doc.page_count == 0:
                     print(f"Skipping empty or invalid PDF: {filename}")
@@ -97,12 +97,6 @@ async def merge_pdfs(pdf_files: List[tuple[str, bytes]]) -> bytes:
             except Exception as e:
                 print(f"Error processing file '{filename}': {str(e)}")
                 raise HTTPException(status_code=400, detail=f"Error processing file '{filename}': {str(e)}")
-            finally:
-                # Close the file descriptor if it's still open
-                try:
-                    os.close(temp_fd)
-                except (OSError, ValueError):
-                    pass  # File descriptor already closed
 
         if page_counter == 0:
             raise HTTPException(status_code=400, detail="No valid PDF content found to merge")
@@ -113,12 +107,16 @@ async def merge_pdfs(pdf_files: List[tuple[str, bytes]]) -> bytes:
         pdf_bytes = merged_doc.tobytes()
         merged_doc.close()
         
+        # Save merged PDF to local temp directory for later use
+        merged_pdf_path = save_temp_file(pdf_bytes, "merged_lectures.pdf")
+        print(f"Merged PDF saved to: {merged_pdf_path}")
+        
         return pdf_bytes
         
     finally:
         # Clean up temporary files
         for temp_file_path in temp_files:
             try:
-                os.unlink(temp_file_path)
+                temp_file_path.unlink()
             except Exception:
                 pass

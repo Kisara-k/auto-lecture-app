@@ -1,11 +1,11 @@
 import fitz
 import json
 import re
-import tempfile
 from collections import OrderedDict
 from difflib import SequenceMatcher
 from typing import List, Dict, Any
 from fastapi import HTTPException
+from ..utils.temp_utils import create_temp_file, save_temp_json
 
 def extract_clean_paragraphs(text: str) -> str:
     """Extract and clean paragraphs from text"""
@@ -155,11 +155,10 @@ def is_similar_content(prev_content: str, current_content: str, similarity_thres
 
 def extract_all_toc_entries_with_content(pdf_bytes: bytes) -> List[Dict[str, Any]]:
     """Extract table of contents entries with content from PDF bytes"""
-    with tempfile.NamedTemporaryFile(suffix='.pdf') as temp_file:
-        temp_file.write(pdf_bytes)
-        temp_file.flush()
-        
-        doc = fitz.open(temp_file.name)
+    temp_file_path = create_temp_file(suffix='.pdf', prefix='extract_', content=pdf_bytes)
+    
+    try:
+        doc = fitz.open(str(temp_file_path))
         toc = doc.get_toc()
 
         if not toc:
@@ -236,6 +235,13 @@ def extract_all_toc_entries_with_content(pdf_bytes: bytes) -> List[Dict[str, Any
 
         doc.close()
         return toc_flat
+    
+    finally:
+        # Clean up temporary file
+        try:
+            temp_file_path.unlink()
+        except Exception:
+            pass
 
 async def extract_content_from_pdf(pdf_bytes: bytes) -> List[Dict[str, Any]]:
     """
@@ -258,6 +264,10 @@ async def extract_content_from_pdf(pdf_bytes: bytes) -> List[Dict[str, Any]]:
                 "title": entry["title"],
                 "content": entry["content"]
             })
+        
+        # Save extracted content to local temp directory for later use
+        extracted_json_path = save_temp_json(result, "extracted_lectures.json")
+        print(f"Extracted content saved to: {extracted_json_path}")
         
         return result
         

@@ -9,6 +9,7 @@ from ..config import (
     config, system_prompt, guided_system_prompt, user_prompt_1, user_prompt_2, 
     user_prompt_3, user_prompt_4, user_prompt_5, clean, model_usage
 )
+from ..utils.temp_utils import save_temp_markdown
 
 class OpenAIService:
     def __init__(self, api_key: str):
@@ -103,7 +104,58 @@ class OpenAIService:
                 if isinstance(result, dict):
                     results.update(result)
 
+        # Generate markdown content and save to temp directory
+        markdown_content = self._generate_markdown_content(results)
+        filename = f"lecture_{lecture_id:02d}_{title.replace(' ', '_').replace('/', '_')}.md"
+        markdown_path = save_temp_markdown(markdown_content, filename)
+        print(f"Lecture {lecture_id} markdown saved to: {markdown_path}")
+        
+        # Add the markdown file path to results
+        results["markdown_file"] = str(markdown_path)
+
         return results
+
+    def _generate_markdown_content(self, results: Dict[str, Any]) -> str:
+        """Generate markdown content from processed lecture results"""
+        content = []
+        
+        # Title and header
+        content.append(f"# Lecture {results['index']}: {results['title']}\n")
+        
+        # Study notes
+        content.append("## Study Notes\n")
+        content.append(f"{results['study_notes']}\n")
+        
+        # Add transcript if available
+        if 'transcript' in results:
+            content.append("## Lecture Transcript\n")
+            content.append(f"{results['transcript']}\n")
+        
+        # Add key points if available
+        if 'key_points' in results:
+            content.append("## Key Points\n")
+            content.append(f"{results['key_points']}\n")
+        
+        # Add Q&A if available
+        if 'questions' in results and 'answers' in results:
+            content.append("## Questions and Answers\n")
+            content.append("### Questions\n")
+            content.append(f"{results['questions']}\n")
+            content.append("### Answers\n")
+            content.append(f"{results['answers']}\n")
+        
+        # Add cost information
+        total_cost = results.get('cost', 0)
+        if 'transcript_cost' in results:
+            total_cost += results['transcript_cost']
+        if 'qa_cost' in results:
+            total_cost += results['qa_cost']
+        if 'key_points_cost' in results:
+            total_cost += results['key_points_cost']
+            
+        content.append(f"\n---\n*Processing cost: ${total_cost:.4f}*\n")
+        
+        return "\n".join(content)
 
     async def _generate_transcript(self, lec_prompt_1: str, study_notes: str) -> Dict[str, Any]:
         """Generate lecture transcript"""

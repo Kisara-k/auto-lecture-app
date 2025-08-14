@@ -1,4 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from fastapi.responses import FileResponse
 from typing import List, Optional
 import os
 from dotenv import load_dotenv
@@ -11,6 +12,7 @@ from ..models import (
     ConfigUpdate, StatusResponse
 )
 from ..config import config
+from ..utils.temp_utils import create_temp_file, get_temp_file_path, list_temp_files
 
 # Load environment variables
 load_dotenv()
@@ -46,15 +48,19 @@ async def merge_pdf_files(files: List[UploadFile] = File(...)):
         
         # Count pages and bookmarks (simplified estimation)
         import fitz
-        import tempfile
         
-        with tempfile.NamedTemporaryFile(suffix='.pdf') as temp_file:
-            temp_file.write(merged_pdf_bytes)
-            temp_file.flush()
-            doc = fitz.open(temp_file.name)
+        temp_file_path = create_temp_file(suffix='.pdf', content=merged_pdf_bytes)
+        try:
+            doc = fitz.open(str(temp_file_path))
             page_count = doc.page_count
             bookmark_count = len(doc.get_toc())
             doc.close()
+        finally:
+            # Clean up temporary file
+            try:
+                temp_file_path.unlink()
+            except Exception:
+                pass
         
         # In a real application, you might want to save this to storage
         # For now, we'll just return the response
@@ -200,3 +206,66 @@ async def update_configuration(config_update: ConfigUpdate):
             "IS_BOOK": config.IS_BOOK
         }
     }
+
+@router.get("/temp-files")
+async def list_temp_files_endpoint():
+    """List all files in the temp directory"""
+    try:
+        files = list_temp_files()
+        file_info = []
+        for file_path in files:
+            file_info.append({
+                "name": file_path.name,
+                "size": file_path.stat().st_size,
+                "created": file_path.stat().st_ctime
+            })
+        return {"files": file_info}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listing temp files: {str(e)}")
+
+@router.get("/temp-files/{filename}")
+async def get_temp_file(filename: str):
+    """Serve a file from the temp directory"""
+    try:
+        file_path = get_temp_file_path(filename)
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        # Determine media type based on file extension
+        if filename.endswith('.pdf'):
+            media_type = 'application/pdf'
+        elif filename.endswith('.json'):
+            media_type = 'application/json'
+        elif filename.endswith('.md'):
+            media_type = 'text/markdown'
+        else:
+            media_type = 'application/octet-stream'
+        
+        return FileResponse(
+            path=str(file_path),
+            media_type=media_type,
+            filename=filename
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error serving file: {str(e)}")
+
+@router.get("/temp-files/{filename}/content")
+async def get_temp_file_content(filename: str):
+    """Get the content of a text file from temp directory as JSON"""
+    try:
+        file_path = get_temp_file_path(filename)
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        if filename.endswith('.md'):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return {"content": content, "type": "markdown"}
+        elif filename.endswith('.json'):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return {"content": content, "type": "json"}
+        else:
+            raise HTTPException(status_code=400, detail="File type not supported for content viewing")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading file content: {str(e)}")
