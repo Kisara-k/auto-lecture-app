@@ -1,0 +1,86 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start FastAPI Backend",
+      "type": "shell",
+      "command": "cd backend && python main.py",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Install Backend Dependencies",
+      "type": "shell",
+      "command": "cd backend && pip install -r requirements.txt",
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false
+      }
+    },
+    {
+      "label": "Setup Backend Environment",
+      "type": "shell",
+      "command": "cd backend && python -m venv venv && venv\\Scripts\\activate && pip install -r requirements.txt",
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false
+      }
+    },
+    {
+      "label": "Start with Uvicorn (Development)",
+      "type": "shell",
+      "command": "cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Test API Endpoints",
+      "type": "shell",
+      "command": "cd backend && python -c \"import requests; print('Testing health endpoint...'); r = requests.get('http://localhost:8000/health'); print(f'Status: {r.status_code}'); print(f'Response: {r.json()}')\"",
+      "group": "test",
+      "dependsOn": "Start FastAPI Backend",
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Frontend Server",
+      "type": "shell",
+      "command": "cd frontend && python serve.py",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Start Full Application",
+      "dependsOrder": "parallel",
+      "dependsOn": ["Start FastAPI Backend", "Start Frontend Server"],
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
