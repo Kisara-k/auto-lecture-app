@@ -1,15 +1,12 @@
-# Auto Lecture App
+# Auto Lecture
 
-An intelligent system for processing lecture PDFs and generating comprehensive study materials using AI.
+An system for intelligently processing lecture PDFs and generating comprehensive study materials using AI.
 
 ## Overview
+This project transforms lecture PDFs into structured study materials, including detailed study notes, lecture transcripts, multiple choice questions with answers, and key points.
 
-This project converts lecture PDFs into structured study materials including:
-
-- 📝 Detailed study notes
-- 🎤 Lecture transcripts
-- ❓ Multiple choice questions with answers
-- 🎯 Key points and facts
+![Demo Screenshot 1](assets/demo/Screenshot_83.png)
+![Demo Screenshot 1](assets/demo/Screenshot_85.png)
 
 ## Project Structure
 
