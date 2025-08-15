@@ -9,7 +9,7 @@ from ..config import (
     config, system_prompt, guided_system_prompt, user_prompt_1, user_prompt_2, 
     user_prompt_3, user_prompt_4, user_prompt_5, clean, model_usage
 )
-from ..utils.temp_utils import save_temp_markdown
+from ..utils.output_utils import save_output_markdown
 
 class OpenAIService:
     def __init__(self, api_key: str):
@@ -104,10 +104,10 @@ class OpenAIService:
                 if isinstance(result, dict):
                     results.update(result)
 
-        # Generate markdown content and save to temp directory
+        # Generate markdown content and save to outputs directory
         markdown_content = self._generate_markdown_content(results)
         filename = f"lecture_{lecture_id:02d}_{title.replace(' ', '_').replace('/', '_')}.md"
-        markdown_path = save_temp_markdown(markdown_content, filename)
+        markdown_path = save_output_markdown(markdown_content, filename)
         print(f"Lecture {lecture_id} markdown saved to: {markdown_path}")
         
         # Add the markdown file path to results

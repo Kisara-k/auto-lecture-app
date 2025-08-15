@@ -13,6 +13,7 @@ from ..models import (
 )
 from ..config import config
 from ..utils.temp_utils import create_temp_file, get_temp_file_path, list_temp_files
+from ..utils.output_utils import get_output_file_path, list_output_files
 
 # Load environment variables
 load_dotenv()
@@ -296,3 +297,66 @@ async def get_temp_file_content(filename: str):
             raise HTTPException(status_code=400, detail="File type not supported for content viewing")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reading file content: {str(e)}")
+
+@router.get("/output-files")
+async def list_output_files_endpoint():
+    """List all files in the outputs directory"""
+    try:
+        files = list_output_files()
+        file_info = []
+        for file_path in files:
+            file_info.append({
+                "name": file_path.name,
+                "size": file_path.stat().st_size,
+                "created": file_path.stat().st_ctime
+            })
+        return {"files": file_info}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listing output files: {str(e)}")
+
+@router.get("/output-files/{filename}")
+async def get_output_file(filename: str):
+    """Serve a file from the outputs directory"""
+    try:
+        file_path = get_output_file_path(filename)
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        # Determine media type based on file extension
+        if filename.endswith('.pdf'):
+            media_type = 'application/pdf'
+        elif filename.endswith('.json'):
+            media_type = 'application/json'
+        elif filename.endswith('.md'):
+            media_type = 'text/markdown'
+        else:
+            media_type = 'application/octet-stream'
+        
+        return FileResponse(
+            path=str(file_path),
+            media_type=media_type,
+            filename=filename
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error serving output file: {str(e)}")
+
+@router.get("/output-files/{filename}/content")
+async def get_output_file_content(filename: str):
+    """Get the content of a text file from outputs directory as JSON"""
+    try:
+        file_path = get_output_file_path(filename)
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        if filename.endswith('.md'):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return {"content": content, "type": "markdown"}
+        elif filename.endswith('.json'):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return {"content": content, "type": "json"}
+        else:
+            raise HTTPException(status_code=400, detail="File type not supported for content viewing")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading output file content: {str(e)}")

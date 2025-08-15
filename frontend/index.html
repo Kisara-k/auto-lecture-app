@@ -425,7 +425,7 @@
 
     <div class="container">
       <div class="header">
-        <h1>🎓 Auto Lecture App</h1>
+        <h1>Auto Lecture</h1>
         <p
           >Upload your lecture PDFs and generate comprehensive study materials
           with AI</p
@@ -564,7 +564,10 @@
               🐛 Debug Info
             </button>
             <button class="btn btn-secondary" onclick="viewTempFiles()">
-              📁 View Generated Files
+              📁 View Temp Files
+            </button>
+            <button class="btn btn-secondary" onclick="viewOutputFiles()">
+              📄 View Output Files
             </button>
           </div>
         </div>
@@ -596,12 +599,32 @@
 
         <!-- Temp Files Section -->
         <div id="tempFiles" class="section" style="display: none">
-          <h2>📁 Generated Files</h2>
+          <h2>📁 Temp Files</h2>
           <div id="tempFilesList"></div>
           <div id="fileViewer" style="display: none; margin-top: 20px">
             <h3 id="viewerTitle">File Content</h3>
             <div
               id="fileContent"
+              style="
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                max-height: 500px;
+                overflow-y: auto;
+                border: 1px solid #ddd;
+              "
+            ></div>
+          </div>
+        </div>
+
+        <!-- Output Files Section -->
+        <div id="outputFiles" class="section" style="display: none">
+          <h2>📄 Output Files</h2>
+          <div id="outputFilesList"></div>
+          <div id="outputFileViewer" style="display: none; margin-top: 20px">
+            <h3 id="outputViewerTitle">File Content</h3>
+            <div
+              id="outputFileContent"
               style="
                 background: #f8f9fa;
                 padding: 15px;
@@ -1197,7 +1220,7 @@
         costInfo.innerHTML = `
                 💰 Total Cost: $${result.total_cost.toFixed(4)} | 
                 📚 Processed: ${result.processed_count} lectures |
-                <a href="#" onclick="viewTempFiles(); return false;" style="color: #007bff; text-decoration: none;">📁 View Generated Files</a>
+                <a href="#" onclick="viewOutputFiles(); return false;" style="color: #007bff; text-decoration: none;">� View Output Files</a>
             `;
 
         // Display results
@@ -1286,6 +1309,7 @@
         document.getElementById("results").style.display = "none";
         document.getElementById("debugInfo").style.display = "none";
         document.getElementById("tempFiles").style.display = "none";
+        document.getElementById("outputFiles").style.display = "none";
         uploadedFiles = [];
         mergedPdfData = null;
         extractedLectures = null;
@@ -1408,36 +1432,64 @@
         viewerTitle.textContent = `📄 ${filename}`;
 
         if (type === "markdown") {
-          // Simple markdown rendering (basic formatting)
+          // Enhanced markdown rendering with better formatting (same as output files)
           const htmlContent = content
-            .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-            .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-            .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-            .replace(/\*(.*?)\*/g, "<em>$1</em>")
-            .replace(/^\* (.*$)/gim, "<li>$1</li>")
-            .replace(/\n\n/g, "</p><p>")
-            .replace(/^(?!<[h|l|p])/gm, "<p>")
+            .replace(
+              /^# (.*$)/gim,
+              '<h1 style="color: #2c3e50; margin-top: 20px; margin-bottom: 10px; font-size: 1.8em;">$1</h1>'
+            )
+            .replace(
+              /^## (.*$)/gim,
+              '<h2 style="color: #34495e; margin-top: 15px; margin-bottom: 8px; font-size: 1.4em;">$1</h2>'
+            )
+            .replace(
+              /^### (.*$)/gim,
+              '<h3 style="color: #5d6d7e; margin-top: 12px; margin-bottom: 6px; font-size: 1.2em;">$1</h3>'
+            )
+            .replace(
+              /\*\*(.*?)\*\*/g,
+              '<strong style="color: #2c3e50;">$1</strong>'
+            )
+            .replace(/\*(.*?)\*/g, '<em style="color: #34495e;">$1</em>')
+            .replace(
+              /^[-*+] (.*$)/gim,
+              '<li style="margin-bottom: 4px;">$1</li>'
+            )
+            .replace(
+              /\n\n/g,
+              '</p><p style="margin-bottom: 12px; line-height: 1.6;">'
+            )
+            .replace(
+              /^(?!<[h|l|p])/gm,
+              '<p style="margin-bottom: 12px; line-height: 1.6;">'
+            )
             .replace(/(?<![h|i]>)$/gm, "</p>")
-            .replace(/<p><\/p>/g, "")
-            .replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>")
-            .replace(/<\/li>\s*<li>/g, "</li><li>");
+            .replace(/<p[^>]*><\/p>/g, "")
+            .replace(
+              /(<li>.*<\/li>)/gs,
+              '<ul style="margin-left: 20px; margin-bottom: 12px;">$1</ul>'
+            )
+            .replace(/<\/li>\s*<li>/g, "</li><li>")
+            .replace(
+              /---/g,
+              '<hr style="margin: 20px 0; border: none; border-top: 1px solid #bdc3c7;">'
+            );
 
-          fileContent.innerHTML = `<div class="markdown-content">${htmlContent}</div>`;
+          fileContent.innerHTML = `<div class="markdown-content" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #2c3e50;">${htmlContent}</div>`;
         } else if (type === "json") {
-          // Pretty print JSON
+          // Pretty print JSON with enhanced styling
           try {
             const jsonObj = JSON.parse(content);
-            fileContent.innerHTML = `<pre style="font-family: 'Courier New', monospace; font-size: 0.9em;">${JSON.stringify(
+            fileContent.innerHTML = `<pre style="font-family: 'Courier New', monospace; font-size: 0.9em; background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">${JSON.stringify(
               jsonObj,
               null,
               2
             )}</pre>`;
           } catch (e) {
-            fileContent.innerHTML = `<pre style="font-family: 'Courier New', monospace; font-size: 0.9em;">${content}</pre>`;
+            fileContent.innerHTML = `<pre style="font-family: 'Courier New', monospace; font-size: 0.9em; background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">${content}</pre>`;
           }
         } else {
-          fileContent.innerHTML = `<pre style="font-family: 'Courier New', monospace; font-size: 0.9em;">${content}</pre>`;
+          fileContent.innerHTML = `<pre style="font-family: 'Courier New', monospace; font-size: 0.9em; background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">${content}</pre>`;
         }
 
         fileViewer.style.display = "block";
@@ -1449,6 +1501,155 @@
         const sizes = ["Bytes", "KB", "MB", "GB"];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      // Output files functions
+      async function viewOutputFiles() {
+        try {
+          const response = await fetch(`${API_BASE}/output-files`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const result = await response.json();
+          displayOutputFiles(result.files);
+        } catch (error) {
+          showStatus("error", `Error fetching output files: ${error.message}`);
+          addDebugLog(`❌ Error fetching output files: ${error.message}`);
+        }
+      }
+
+      function displayOutputFiles(files) {
+        const outputFilesDiv = document.getElementById("outputFiles");
+        const outputFilesList = document.getElementById("outputFilesList");
+
+        if (!files || files.length === 0) {
+          outputFilesList.innerHTML =
+            '<p style="color: #666; text-align: center; padding: 20px;">No output files found. Process lectures to generate output files.</p>';
+        } else {
+          outputFilesList.innerHTML = files
+            .sort((a, b) => b.created - a.created) // Sort by creation time, newest first
+            .map(
+              (file) => `
+              <div class="file-item">
+                <div class="file-info">
+                  <div class="file-name">📄 ${file.name}</div>
+                  <div class="file-meta">
+                    Size: ${formatFileSize(file.size)} | 
+                    Created: ${new Date(file.created * 1000).toLocaleString()}
+                  </div>
+                </div>
+                <div class="file-actions">
+                  ${
+                    file.name.endsWith(".md") || file.name.endsWith(".json")
+                      ? `<button class="btn-file btn-view" onclick="viewOutputFileContent('${file.name}')">👁️ View</button>`
+                      : ""
+                  }
+                  <a href="${API_BASE}/output-files/${file.name}" 
+                     target="_blank" 
+                     class="btn-file btn-download">💾 Download</a>
+                </div>
+              </div>
+            `
+            )
+            .join("");
+        }
+
+        outputFilesDiv.style.display = "block";
+        // Hide other sections
+        document.getElementById("results").style.display = "none";
+        document.getElementById("debugInfo").style.display = "none";
+        document.getElementById("tempFiles").style.display = "none";
+      }
+
+      async function viewOutputFileContent(filename) {
+        try {
+          const response = await fetch(
+            `${API_BASE}/output-files/${filename}/content`
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const result = await response.json();
+          displayOutputFileContent(filename, result.content, result.type);
+        } catch (error) {
+          showStatus("error", `Error viewing output file: ${error.message}`);
+          addDebugLog(
+            `❌ Error viewing output file ${filename}: ${error.message}`
+          );
+        }
+      }
+
+      function displayOutputFileContent(filename, content, type) {
+        const fileViewer = document.getElementById("outputFileViewer");
+        const viewerTitle = document.getElementById("outputViewerTitle");
+        const fileContent = document.getElementById("outputFileContent");
+
+        viewerTitle.textContent = `📄 ${filename}`;
+
+        if (type === "markdown") {
+          // Enhanced markdown rendering with better formatting
+          const htmlContent = content
+            .replace(
+              /^# (.*$)/gim,
+              '<h1 style="color: #2c3e50; margin-top: 20px; margin-bottom: 10px; font-size: 1.8em;">$1</h1>'
+            )
+            .replace(
+              /^## (.*$)/gim,
+              '<h2 style="color: #34495e; margin-top: 15px; margin-bottom: 8px; font-size: 1.4em;">$1</h2>'
+            )
+            .replace(
+              /^### (.*$)/gim,
+              '<h3 style="color: #5d6d7e; margin-top: 12px; margin-bottom: 6px; font-size: 1.2em;">$1</h3>'
+            )
+            .replace(
+              /\*\*(.*?)\*\*/g,
+              '<strong style="color: #2c3e50;">$1</strong>'
+            )
+            .replace(/\*(.*?)\*/g, '<em style="color: #34495e;">$1</em>')
+            .replace(
+              /^[-*+] (.*$)/gim,
+              '<li style="margin-bottom: 4px;">$1</li>'
+            )
+            .replace(
+              /\n\n/g,
+              '</p><p style="margin-bottom: 12px; line-height: 1.6;">'
+            )
+            .replace(
+              /^(?!<[h|l|p])/gm,
+              '<p style="margin-bottom: 12px; line-height: 1.6;">'
+            )
+            .replace(/(?<![h|i]>)$/gm, "</p>")
+            .replace(/<p[^>]*><\/p>/g, "")
+            .replace(
+              /(<li>.*<\/li>)/gs,
+              '<ul style="margin-left: 20px; margin-bottom: 12px;">$1</ul>'
+            )
+            .replace(/<\/li>\s*<li>/g, "</li><li>")
+            .replace(
+              /---/g,
+              '<hr style="margin: 20px 0; border: none; border-top: 1px solid #bdc3c7;">'
+            );
+
+          fileContent.innerHTML = `<div class="markdown-content" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #2c3e50;">${htmlContent}</div>`;
+        } else if (type === "json") {
+          // Pretty print JSON
+          try {
+            const jsonObj = JSON.parse(content);
+            fileContent.innerHTML = `<pre style="font-family: 'Courier New', monospace; font-size: 0.9em; background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">${JSON.stringify(
+              jsonObj,
+              null,
+              2
+            )}</pre>`;
+          } catch (e) {
+            fileContent.innerHTML = `<pre style="font-family: 'Courier New', monospace; font-size: 0.9em; background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">${content}</pre>`;
+          }
+        } else {
+          fileContent.innerHTML = `<pre style="font-family: 'Courier New', monospace; font-size: 0.9em; background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">${content}</pre>`;
+        }
+
+        fileViewer.style.display = "block";
       }
     </script>
   </body>
