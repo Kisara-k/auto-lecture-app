@@ -30,23 +30,23 @@ def main():
     os.chdir(DIRECTORY)
     
     with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
-        print(f"🌐 Frontend server starting on http://localhost:{PORT}")
-        print(f"📁 Serving files from: {DIRECTORY}")
-        print(f"🎓 Auto Lecture App frontend available at: http://localhost:{PORT}")
-        print(f"📚 Make sure the backend is running on http://localhost:8000")
-        print(f"\n🔧 To stop the server, press Ctrl+C")
+        print(f"Frontend server starting on http://localhost:{PORT}")
+        print(f"Serving files from: {DIRECTORY}")
+        print(f"Auto Lecture App frontend available at: http://localhost:{PORT}")
+        print(f"Make sure the backend is running on http://localhost:8000")
+        print(f"\nTo stop the server, press Ctrl+C")
         
         # Try to open the browser automatically
         try:
             webbrowser.open(f'http://localhost:{PORT}')
-            print(f"🌍 Browser opened automatically")
+            print(f"Browser opened automatically")
         except Exception:
-            print(f"🌍 Please open http://localhost:{PORT} in your browser")
+            print(f"Please open http://localhost:{PORT} in your browser")
         
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print(f"\n👋 Frontend server stopped")
+            print(f"\nFrontend server stopped")
 
 if __name__ == "__main__":
     main()

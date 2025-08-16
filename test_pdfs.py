@@ -31,7 +31,7 @@ def create_sample_pdf(content: str, filename: str) -> str:
 
 def test_pdf_merge():
     """Test PDF merging functionality"""
-    print("🧪 Testing PDF merge functionality...")
+    print("Testing PDF merge functionality...")
     
     # Create sample PDFs
     pdf1_content = """
@@ -79,13 +79,13 @@ def test_pdf_merge():
         pdf2_path = create_sample_pdf(pdf2_content, "02_neural_networks.pdf")
         pdf3_path = create_sample_pdf(pdf3_content, "03_data_preprocessing.pdf")
         
-        print(f"✅ Created test PDF: {pdf1_path}")
-        print(f"✅ Created test PDF: {pdf2_path}")
-        print(f"✅ Created test PDF: {pdf3_path}")
+        print(f"Created test PDF: {pdf1_path}")
+        print(f"Created test PDF: {pdf2_path}")
+        print(f"Created test PDF: {pdf3_path}")
         
         # Test opening each PDF
         for pdf_path in [pdf1_path, pdf2_path, pdf3_path]:
-            print(f"\n🔍 Testing PDF: {pdf_path}")
+            print(f"\nTesting PDF: {pdf_path}")
             
             # Check file properties
             file_size = os.path.getsize(pdf_path)
@@ -94,7 +94,7 @@ def test_pdf_merge():
             # Test opening with PyMuPDF
             try:
                 doc = fitz.open(pdf_path)
-                print(f"   ✅ Successfully opened with PyMuPDF")
+                print(f"   Successfully opened with PyMuPDF")
                 print(f"   Pages: {doc.page_count}")
                 
                 # Test reading content
@@ -106,10 +106,10 @@ def test_pdf_merge():
                 
                 doc.close()
             except Exception as e:
-                print(f"   ❌ Failed to open: {e}")
+                print(f"   Failed to open: {e}")
         
         # Test merging
-        print(f"\n🔄 Testing merge functionality...")
+        print(f"\nTesting merge functionality...")
         merged_doc = fitz.open()
         toc = []
         page_counter = 0
@@ -126,9 +126,9 @@ def test_pdf_merge():
                 page_counter += doc.page_count
                 
                 doc.close()
-                print(f"   ✅ Merged {filename}")
+                print(f"   Merged {filename}")
             except Exception as e:
-                print(f"   ❌ Failed to merge {pdf_path}: {e}")
+                print(f"   Failed to merge {pdf_path}: {e}")
         
         # Save merged PDF
         merged_doc.set_toc(toc)
@@ -136,19 +136,19 @@ def test_pdf_merge():
         merged_doc.save(merged_path)
         merged_doc.close()
         
-        print(f"✅ Merged PDF saved: {merged_path}")
+        print(f"Merged PDF saved: {merged_path}")
         print(f"   Total pages: {page_counter}")
         print(f"   Bookmarks: {len(toc)}")
         
         return True
         
     except Exception as e:
-        print(f"❌ Test failed: {e}")
+        print(f"Test failed: {e}")
         return False
 
 def test_problematic_pdf():
     """Test with various edge cases that might cause issues"""
-    print("\n🧪 Testing edge cases...")
+    print("\nTesting edge cases...")
     
     try:
         # Test empty PDF
@@ -156,7 +156,7 @@ def test_problematic_pdf():
         empty_path = "test_pdfs/empty.pdf"
         empty_doc.save(empty_path)
         empty_doc.close()
-        print(f"✅ Created empty PDF: {empty_path}")
+        print(f"Created empty PDF: {empty_path}")
         
         # Test opening empty PDF
         try:
@@ -164,22 +164,22 @@ def test_problematic_pdf():
             print(f"   Pages in empty PDF: {doc.page_count}")
             doc.close()
         except Exception as e:
-            print(f"   ❌ Error with empty PDF: {e}")
+            print(f"   Error with empty PDF: {e}")
         
         # Test corrupted filename (with special characters)
         special_content = "PDF with special filename characters"
         special_path = create_sample_pdf(special_content, "04_special-chars_&_symbols.pdf")
-        print(f"✅ Created PDF with special characters: {special_path}")
+        print(f"Created PDF with special characters: {special_path}")
         
         return True
         
     except Exception as e:
-        print(f"❌ Edge case test failed: {e}")
+        print(f"Edge case test failed: {e}")
         return False
 
 def diagnose_temp_file_issues():
     """Diagnose temporary file handling issues"""
-    print("\n🔧 Diagnosing temporary file handling...")
+    print("\nDiagnosing temporary file handling...")
     
     try:
         # Test tempfile creation
@@ -197,37 +197,37 @@ def diagnose_temp_file_issues():
         # Test opening the temp file
         print(f"   Testing temp file access...")
         if os.path.exists(temp_path):
-            print(f"   ✅ Temp file exists")
+            print(f"   Temp file exists")
             print(f"   Size: {os.path.getsize(temp_path)} bytes")
             print(f"   Readable: {os.access(temp_path, os.R_OK)}")
             
             # Test opening with PyMuPDF
             try:
                 doc = fitz.open(temp_path)
-                print(f"   ✅ Successfully opened temp PDF")
+                print(f"   Successfully opened temp PDF")
                 print(f"   Pages: {doc.page_count}")
                 doc.close()
             except Exception as e:
-                print(f"   ❌ Failed to open temp PDF: {e}")
+                print(f"   Failed to open temp PDF: {e}")
             
         else:
-            print(f"   ❌ Temp file does not exist")
+            print(f"   Temp file does not exist")
         
         # Clean up
         try:
             os.unlink(temp_path)
-            print(f"   ✅ Cleaned up temp file")
+            print(f"   Cleaned up temp file")
         except Exception as e:
-            print(f"   ⚠️ Failed to clean up temp file: {e}")
+            print(f"   Failed to clean up temp file: {e}")
             
         return True
         
     except Exception as e:
-        print(f"❌ Temp file test failed: {e}")
+        print(f"Temp file test failed: {e}")
         return False
 
 def main():
-    print("🧪 PDF Test Suite - Auto Lecture App")
+    print("PDF Test Suite - Auto Lecture App")
     print("=" * 50)
     
     # Test 1: Basic PDF merge
@@ -240,20 +240,20 @@ def main():
     success3 = diagnose_temp_file_issues()
     
     print("\n" + "=" * 50)
-    print("📊 Test Results:")
-    print(f"   Basic merge test: {'✅ PASS' if success1 else '❌ FAIL'}")
-    print(f"   Edge cases test: {'✅ PASS' if success2 else '❌ FAIL'}")
-    print(f"   Temp file test: {'✅ PASS' if success3 else '❌ FAIL'}")
+    print("Test Results:")
+    print(f"   Basic merge test: {'PASS' if success1 else 'FAIL'}")
+    print(f"   Edge cases test: {'PASS' if success2 else 'FAIL'}")
+    print(f"   Temp file test: {'PASS' if success3 else 'FAIL'}")
     
     if all([success1, success2, success3]):
-        print("\n🎉 All tests passed! PDF processing should work correctly.")
-        print("\n📁 Test files created in 'test_pdfs/' directory")
+        print("\nAll tests passed! PDF processing should work correctly.")
+        print("\nTest files created in 'test_pdfs/' directory")
         print("   You can use these files to test the web interface:")
         print("   1. Start the backend: cd backend && python main.py")
         print("   2. Start the frontend: cd frontend && python serve.py")
         print("   3. Upload the test PDFs from 'test_pdfs/' folder")
     else:
-        print("\n⚠️ Some tests failed. Check the error messages above.")
+        print("\nSome tests failed. Check the error messages above.")
         print("   Common issues:")
         print("   - PyMuPDF not installed: pip install PyMuPDF")
         print("   - File permissions issues")

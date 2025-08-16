@@ -17,50 +17,50 @@ def test_health():
     try:
         response = requests.get(f"{BASE_URL.replace('/api/v1', '')}/health")
         if response.status_code == 200:
-            print("✅ API is running")
+            print("API is running")
             return True
         else:
-            print("❌ API health check failed")
+            print("API health check failed")
             return False
     except requests.exceptions.ConnectionError:
-        print("❌ Cannot connect to API. Make sure the server is running.")
+        print("Cannot connect to API. Make sure the server is running.")
         return False
 
 def get_status():
     """Get current API configuration"""
     response = requests.get(f"{BASE_URL}/status")
     if response.status_code == 200:
-        print("📊 Current Configuration:")
+        print("Current Configuration:")
         config = response.json()["config"]
         for key, value in config.items():
             print(f"  {key}: {value}")
     else:
-        print("❌ Failed to get status")
+        print("Failed to get status")
 
 def update_config(updates):
     """Update API configuration"""
     response = requests.post(f"{BASE_URL}/update-config", json=updates)
     if response.status_code == 200:
-        print("✅ Configuration updated")
-        print(f"📊 Updated fields: {response.json()['message']}")
+        print("Configuration updated")
+        print(f"Updated fields: {response.json()['message']}")
     else:
-        print("❌ Failed to update configuration")
+        print("Failed to update configuration")
         print(f"Error: {response.text}")
 
 def process_complete_pipeline(pdf_files):
     """Process PDFs through the complete pipeline"""
     if not pdf_files:
-        print("❌ No PDF files provided")
+        print("No PDF files provided")
         return
     
     files = []
     for pdf_file in pdf_files:
         if not os.path.exists(pdf_file):
-            print(f"❌ File not found: {pdf_file}")
+            print(f"File not found: {pdf_file}")
             return
         files.append(('files', (os.path.basename(pdf_file), open(pdf_file, 'rb'), 'application/pdf')))
     
-    print(f"🚀 Processing {len(pdf_files)} PDF files...")
+    print(f"Processing {len(pdf_files)} PDF files...")
     
     try:
         response = requests.post(
@@ -71,20 +71,20 @@ def process_complete_pipeline(pdf_files):
         
         if response.status_code == 200:
             result = response.json()
-            print("✅ Processing completed successfully!")
-            print(f"💰 Total cost: ${result['total_cost']:.4f}")
-            print(f"📚 Processed lectures: {result['processed_count']}")
+            print("Processing completed successfully!")
+            print(f"Total cost: ${result['total_cost']:.4f}")
+            print(f"Processed lectures: {result['processed_count']}")
             
             # Save results to file
             output_file = "processed_lectures.json"
             with open(output_file, 'w', encoding='utf-8') as f:
                 json.dump(result, f, indent=2, ensure_ascii=False)
-            print(f"💾 Results saved to: {output_file}")
+            print(f"Results saved to: {output_file}")
             
             # Print summary of first result
             if result['results']:
                 first_result = result['results'][0]
-                print(f"\n📖 Sample result - {first_result['title']}:")
+                print(f"\nSample result - {first_result['title']}:")
                 print(f"  Study notes: {len(first_result['study_notes'])} characters")
                 if first_result.get('questions'):
                     print(f"  Questions: {len(first_result['questions'])} characters")
@@ -95,7 +95,7 @@ def process_complete_pipeline(pdf_files):
                 if first_result.get('transcript'):
                     print(f"  Transcript: {len(first_result['transcript'])} characters")
         else:
-            print("❌ Processing failed")
+            print("Processing failed")
             print(f"Error: {response.text}")
     
     finally:
@@ -105,7 +105,7 @@ def process_complete_pipeline(pdf_files):
                 file_data[1].close()
 
 def main():
-    print("🎓 Auto Lecture App - API Example")
+    print("Auto Lecture App - API Example")
     print("=" * 40)
     
     # Test API health
@@ -117,7 +117,7 @@ def main():
     print()
     
     # Example: Update configuration
-    print("🔧 Updating configuration...")
+    print("Updating configuration...")
     update_config({
         "MODEL": "gpt-4o-mini",
         "GET_TRANSCRIPTS": True,
@@ -139,7 +139,7 @@ def main():
     if pdf_files:
         process_complete_pipeline(pdf_files)
     else:
-        print("ℹ️  To process PDFs, update the 'pdf_files' list with your PDF file paths")
+        print(" To process PDFs, update the 'pdf_files' list with your PDF file paths")
         print("   Example:")
         print('   pdf_files = ["lecture1.pdf", "lecture2.pdf"]')
 
