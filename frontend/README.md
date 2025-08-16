@@ -4,7 +4,7 @@ A simple, interactive HTML frontend for testing the Auto Lecture App FastAPI bac
 
 ## Features
 
-### 🎯 **Core Functionality**
+### **Core Functionality**
 
 - **Drag & Drop Upload**: Upload multiple PDF files with drag-and-drop support
 - **Real-time Configuration**: Adjust AI model, processing options, and parameters
@@ -12,7 +12,7 @@ A simple, interactive HTML frontend for testing the Auto Lecture App FastAPI bac
 - **Live Results Display**: View generated content with cost tracking
 - **API Status Monitoring**: Real-time backend connection status
 
-### 📱 **User Interface**
+### **User Interface**
 
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
 - **Modern Styling**: Clean, professional interface with gradients and animations
@@ -20,7 +20,7 @@ A simple, interactive HTML frontend for testing the Auto Lecture App FastAPI bac
 - **File Management**: Add/remove files, view file sizes, and validation
 - **Results Export**: Download processed results as JSON
 
-### ⚙️ **Configuration Options**
+### **Configuration Options**
 
 - **AI Model Selection**: Choose between GPT-4o, GPT-4o-mini, etc.
 - **Processing Controls**: Enable/disable transcripts, Q&A, key points

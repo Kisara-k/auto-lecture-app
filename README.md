@@ -145,27 +145,27 @@ curl -X POST "http://localhost:8000/api/v1/update-config" \
 
 ## Features
 
-### 🔄 PDF Processing
+### PDF Processing
 
 - **Merge Multiple PDFs**: Combine lecture slides into a single document
 - **Smart Bookmarking**: Automatically create navigation bookmarks
 - **Content Extraction**: Extract text content organized by lecture sections
 
-### 🤖 AI-Powered Generation
+### AI-Powered Generation
 
 - **Study Notes**: Comprehensive, well-structured notes with detailed explanations
 - **Transcripts**: Natural language lecture transcripts
 - **Questions & Answers**: Multiple choice questions with detailed explanations
 - **Key Points**: Essential facts and concepts for quick review
 
-### ⚙️ Configurable Processing
+### Configurable Processing
 
 - **Model Selection**: Choose from various OpenAI models (GPT-4o, GPT-4o-mini, etc.)
 - **Selective Generation**: Toggle transcripts, Q&A, and key points independently
 - **Batch Processing**: Process multiple lectures with concurrency control
 - **Cost Tracking**: Monitor API usage and costs
 
-### 🚀 Modern API
+### Modern API
 
 - **REST API**: Clean, documented FastAPI endpoints
 - **Interactive Docs**: Built-in Swagger UI for testing

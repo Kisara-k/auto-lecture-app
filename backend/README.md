@@ -136,11 +136,11 @@ curl -X POST "http://localhost:8000/api/v1/update-config" \
     {
       "index": 1,
       "title": "Introduction to Machine Learning",
-      "study_notes": "## 1. 🧠 Introduction to Machine Learning...",
+      "study_notes": "## 1. Introduction to Machine Learning...",
       "transcript": "Welcome to our comprehensive introduction...",
       "questions": "### 1. What is the primary goal of machine learning?...",
       "answers": "### 1. What is the primary goal of machine learning?\nA) ✓ To enable computers to learn...",
-      "key_points": "### 1. 🎯 Core Concepts\n- Machine learning enables...",
+      "key_points": "### 1. Core Concepts\n- Machine learning enables...",
       "cost": 0.0078
     }
   ]
