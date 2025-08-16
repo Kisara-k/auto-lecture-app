@@ -4,9 +4,14 @@ An system for intelligently processing lecture PDFs and generating comprehensive
 
 ## Overview
 This project transforms lecture PDFs into structured study materials, including detailed study notes, lecture transcripts, multiple choice questions with answers, and key points.
-
-![Demo Screenshot 1](assets/demo/Screenshot_83.png)
-![Demo Screenshot 1](assets/demo/Screenshot_85.png)
+<p>
+  <img src="assets/demo/01.png" alt="Demo Screenshot 1" width="800"/>
+</p>
+<p>
+  <img src="assets/demo/02.png" alt="Demo Screenshot 2" width="800"/>
+</p>
+<p>
+  <img src="assets/demo/03.png" alt="Demo Screenshot 3" width="800"/>
 
 ## Project Structure
 
